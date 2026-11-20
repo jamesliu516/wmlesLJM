@@ -28,8 +28,9 @@ struct WmlesFillExtDir
             // Inflow at low-x
             if (bc.lo(0) == BCType::ext_dir and i < domain_box.smallEnd(0))
             {
+                // AMREX_D_DECL drops the z-index in 2D, where there is no k.
                 for (int nc = 0; nc < numcomp; ++nc)
-                   dest(i,j,k,dcomp+nc) = inflow_state[dcomp+nc];
+                   dest(AMREX_D_DECL(i,j,k), dcomp+nc) = inflow_state[dcomp+nc];
             }
         }
 };

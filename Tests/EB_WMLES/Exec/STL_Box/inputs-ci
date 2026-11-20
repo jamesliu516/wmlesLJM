@@ -7,7 +7,9 @@ geometry.is_periodic = 0 0 0
 geometry.coord_sys   = 0
 geometry.prob_lo     = -3.0   -1.5   -1.5
 geometry.prob_hi     =  8.0    1.5    1.5
-amr.n_cell           = 32      16     16
+# n_cell chosen so that dx == dy == dz (the solver requires cubic cells):
+# x: 11/88, y: 3/24, z: 3/24  ->  dx = 1/8
+amr.n_cell           = 88      24     24
 
 wmles.lo_bc = 1 4 4
 wmles.hi_bc = 2 4 4

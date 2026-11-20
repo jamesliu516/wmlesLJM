@@ -27,19 +27,25 @@ foreach(D IN LISTS AMReX_SPACEDIM)
 
     ##########################################################################
     #
-    # Cylinder test — crossflow over a cylinder with WMLES
+    # Cylinder test — 2D crossflow over a cylinder with WMLES
+    #
+    # NOTE: the Cylinder input decks are 2D (prob_lo/n_cell have two entries),
+    # so this case is only registered for the 2D build.  Its cylinder axis is
+    # the out-of-plane direction (eb2.cylinder_direction = 2 in 2D).
     #
     ##########################################################################
-    set(_cylinder_sources Exec/Cylinder/wmles_prob.H  Exec/Cylinder/wmles_prob.cpp
-                          Exec/Cylinder/wmles_prob_parm.H  Exec/Cylinder/wmles_prob_parm.cpp
-                          Exec/Cylinder/WMLES_bcfill.cpp ${_sources})
-    set(_input_files Exec/Cylinder/inputs Exec/Cylinder/inputs-ci)
+    if (D EQUAL 2)
+        set(_cylinder_sources Exec/Cylinder/wmles_prob.H  Exec/Cylinder/wmles_prob.cpp
+                              Exec/Cylinder/wmles_prob_parm.H  Exec/Cylinder/wmles_prob_parm.cpp
+                              Exec/Cylinder/WMLES_bcfill.cpp ${_sources})
+        set(_input_files Exec/Cylinder/inputs Exec/Cylinder/inputs-ci)
 
-    setup_test(${D} _cylinder_sources _input_files
-       BASE_NAME WMLES_Cylinder
-       RUNTIME_SUBDIR Cylinder)
+        setup_test(${D} _cylinder_sources _input_files
+           BASE_NAME WMLES_Cylinder
+           RUNTIME_SUBDIR Cylinder)
 
-    unset(_cylinder_sources)
+        unset(_cylinder_sources)
+    endif()
 
     ##########################################################################
     #

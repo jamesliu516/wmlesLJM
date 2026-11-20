@@ -366,7 +366,9 @@ WMLES::errorEst (TagBoxArray& tags, int, int, Real /*time*/, int, int)
 void
 WMLES::read_params ()
 {
-    ParmParse pp("WMLES");
+    // NOTE: ParmParse keys are case-sensitive; the input decks use the
+    // lowercase prefix "wmles." (mirroring the EB_CNS "cns." convention).
+    ParmParse pp("wmles");
 
     pp.query("v", verbose);
 
