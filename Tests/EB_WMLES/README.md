@@ -122,19 +122,49 @@ Tests/EB_WMLES/
 
 ## 6. 构建与运行
 
-CMake（推荐，2D/3D 自动注册）：
+> 本机推荐路径：**WSL Ubuntu-24.04（GCC 13 + CMake）**，AMReX 官方支持；
+> Windows 原生需 MSVC（GCC ≥ 11 才被 AMReX 接受，本机旧 MinGW 8.1 不可用）。
+
+### 6.1 一键编译 + 测试（推荐）
 
 ```bash
-cmake -S . -B build -DAMReX_EB=ON -DAMReX_ENABLE_TESTS=ON -DAMReX_SPACEDIM=3
-cmake --build build -j N --target Test_WMLES_Cylinder_3d Test_WMLES_STL_Box_3d
-# 运行（在对应 RUNTIME_SUBDIR 目录）
-./build/Tests/EB_WMLES/Cylinder_3d/Test_WMLES_Cylinder_3d inputs
-./build/Tests/EB_WMLES/STL_Box_3d/Test_WMLES_STL_Box_3d inputs
+wsl -d Ubuntu-24.04
+bash /mnt/d/sfw/jamesliu516-wmlesGit/Tests/EB_WMLES/tools/run_wmles_wsl.sh ci both
+#   ci   冒烟测试（10 步）
+#   full 完整算例（STL_Box 400 步 176x48x48；Cylinder 200 步 96x48）
+#   both 2D + 3D 都跑
+```
+脚本会自动配置 `~/amrex-build`（3D）与 `~/amrex-build-2d`（2D）并按需编译、运行。
+
+### 6.2 手动 CMake（3D 示例）
+
+```bash
+cmake -S /mnt/d/sfw/jamesliu516-wmlesGit -B ~/amrex-build \
+  -DCMAKE_BUILD_TYPE=Release -DAMReX_EB=ON -DAMReX_ENABLE_TESTS=ON \
+  -DAMReX_TEST_TYPE=Small -DAMReX_SPACEDIM=3
+cmake --build ~/amrex-build -j16 --target Test_WMLES_STL_Box_3d
+cd ~/amrex-build/Tests/EB_WMLES/STL_Box_3d && ./Test_WMLES_STL_Box_3d inputs
+```
+
+2D（Cylinder）：把 `-DAMReX_SPACEDIM=2`、构建目录换成 `~/amrex-build-2d`、
+目标换成 `Test_WMLES_Cylinder_2d`（该算例输入为 2D，仅注册 2D 构建）。
+
+### 6.3 Windows + MSVC（备用）
+
+若必须用 MSVC：安装 VS 2022 Build Tools（`winget install
+Microsoft.VisualStudio.2022.BuildTools --override "--add
+Microsoft.VisualStudio.Workload.VCTools --includeRecommended"`），然后
+
+```powershell
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
+  -DAMReX_EB=ON -DAMReX_ENABLE_TESTS=ON -DAMReX_SPACEDIM=3
+cmake --build build --config Release --target Test_WMLES_STL_Box_3d
 ```
 
 更换几何：用 CAD 软件导出 ASCII/Binary STL 替换 `Exec/STL_Box/box.stl`
 （或运行 `python make_stl.py` 重新生成），按需调整
 `eb2.stl_scale` / `eb2.stl_center` / `eb2.stl_reverse_normal`。
+注意 STL_Box 要求 `dx == dy == dz`（`WMLES::buildMetrics` 会检查）。
 
 ## 7. 已知限制与注意事项
 
