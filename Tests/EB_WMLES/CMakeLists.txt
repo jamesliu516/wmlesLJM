@@ -56,7 +56,9 @@ foreach(D IN LISTS AMReX_SPACEDIM)
         set(_stlbox_sources Exec/STL_Box/wmles_prob.H  Exec/STL_Box/wmles_prob.cpp
                             Exec/STL_Box/wmles_prob_parm.H  Exec/STL_Box/wmles_prob_parm.cpp
                             Exec/STL_Box/WMLES_bcfill.cpp ${_sources})
-        set(_stlbox_inputs Exec/STL_Box/inputs Exec/STL_Box/inputs-ci)
+        # box.stl is copied into the runtime directory too, so the cases can be
+        # run in place (ctest) without a manual copy of the mesh.
+        set(_stlbox_inputs Exec/STL_Box/inputs Exec/STL_Box/inputs-ci Exec/STL_Box/box.stl)
 
         setup_test(${D} _stlbox_sources _stlbox_inputs
            BASE_NAME WMLES_STL_Box
